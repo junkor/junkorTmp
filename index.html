@@ -1,0 +1,125 @@
+<html>
+	<header>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script src="https://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js"></script>
+		<title>Video Schemer</title>
+		
+		<script language="JavaScript">
+		</script>
+		
+		<style type="text/css">	
+			div{
+			  width:100%;
+			  min-width:500;
+			  max-width:750;
+				display:block;
+				word-break:break-all;
+				word-wrap: break-word;
+			}
+		</style>
+		
+	</header>
+	<body>
+		<h3>用于生成视频落地页的scheme</h3>
+		<div id='form_div'>
+			oid:<input id='oid' type=''/><br/>
+			video_bt_title:<input id='video_bt_title' type=''/><br/>
+			video_bt_scheme:<input id='video_bt_scheme' type=''/><br/>
+			<button onclick='generateScheme()'>生成 scheme</button>
+		</div>
+		<br/>
+		<br/>
+		<div id='result_div' style="width:500px"></div>
+		
+		<script language="JavaScript">
+			$(document).ready(function(){
+				$("[name=crashlog]").change(function(event) {
+					var file = event.target.files[0];
+					if (file) {
+						if (file.name.indexOf('.crash') > 0) {
+							alert('是crashlog');
+						}else{
+							alert('文件格式不支持(.crash)');
+						}
+					}
+				});
+			});
+			
+			function removeAllResult(){
+			    var div = document.getElementById("result_div");
+			    while(div.hasChildNodes()) //当div下还存在子节点时 循环继续
+			    {
+			        div.removeChild(div.firstChild)
+			    }
+			}
+			
+			// write result
+			function echoResult(results) {
+				var result_div = document.getElementById('result_div')
+				
+				for(var i=0;i<results.length;i++){
+					var el = document.createElement('div')
+					el.className = 'result'
+					el.innerHTML = results[i]
+					result_div.appendChild(el)
+				}
+			}
+			
+			function generateScheme() {
+				
+				removeAllResult()
+				
+				var oid = $("#oid").val();
+				if(!oid){
+					echoResult(['oid不能为空'])
+					return
+				}
+				
+				var video_bt_title = $("#video_bt_title").val()
+				if(!video_bt_title){
+					echoResult(['视频落地页按钮得有个title吧'])
+					return
+				}
+				
+				var video_bt_scheme = $("#video_bt_scheme").val()
+				if(!video_bt_scheme){
+					echoResult(['没有scheme，按钮点了去哪？'])
+					return
+				}
+				
+				var videoUrlStr = 'http://video.weibo.com/media/play?fl=hd&fid='+oid
+				videoUrlStr = 'url=' + encodeURIComponent(videoUrlStr)
+				
+				var oidStr = 'oid=' + encodeURIComponent(oid)
+				
+				var sourceStr = 'source=ad_flash'
+				
+				var acCodeStr = 'action_code=1563'
+				var acTextStr = 'action_text=' + encodeURIComponent(video_bt_title)
+				var acUrlStr  = 'action_url='+ encodeURIComponent(video_bt_scheme)
+				
+				var videoBgStr = 'background_local_res_name=ad_video_bg'
+				var touchQuitStr = 'touch_quit=0'
+				
+				var scheme = 'sinaweibo://videoplayer?'
+				scheme += '&' + videoUrlStr
+				scheme += '&' + oidStr
+				scheme += '&' + sourceStr
+				scheme += '&' + acCodeStr
+				scheme += '&' + acTextStr
+				scheme += '&' + acUrlStr
+				scheme += '&' + videoBgStr
+				scheme += '&' + touchQuitStr
+				
+				var br = '<br/>'
+				
+				var preLoadUrl = 'http://video.weibo.com/media/play?fl=hd&fid=' + oid
+				
+				echoResult(['跳转scheme：',br,scheme,br,br,'视频预加载地址：',br,preLoadUrl])
+				
+			}
+			
+		</script>
+		
+	</body>
+</html>
